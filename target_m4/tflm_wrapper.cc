@@ -1,7 +1,6 @@
 #include <tensorflow/lite/micro/kernels/micro_ops.h>
 #include <tensorflow/lite/micro/micro_interpreter.h>
 #include <tensorflow/lite/micro/micro_mutable_op_resolver.h>
-#include <tensorflow/lite/schema/schema_generated.h>
 
 #include "tflm_wrapper.h"
 
@@ -16,6 +15,7 @@ namespace {
   __attribute__((aligned(16))) uint8_t tensor_arena[kTensorArenaSize];
 }  // namespace
 
+void *__dso_handle = NULL;
 
 extern "C" void tflm_init(const uint8_t* model_data) {
     model = ::tflite::GetModel(model_data);

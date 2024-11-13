@@ -56,10 +56,6 @@ int main(void) {
 
     usart_enable(USART1);
 
-    usart_send_blocking(USART1, 't');
-    usart_send_blocking(USART1, '\n');
-
-
     rcc_periph_clock_enable(RCC_GPIOC);
     rcc_periph_clock_enable(RCC_QSPI);
     gpio_mode_setup(GPIOC, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO1 | GPIO2 | GPIO3 | GPIO4);
@@ -87,6 +83,10 @@ int main(void) {
     quadspi_wait_while_busy();
     quadspi_write(&enableQPI, NULL, 0);
 
+    usart_send_blocking(USART1, '1');
+    usart_send_blocking(USART1, '\r');
+    usart_send_blocking(USART1, '\n');
+
     run_lenet5_cnn();
     return 0;
 }
@@ -96,26 +96,53 @@ void run_lenet5_cnn(void) {
     uint8_t data[4];
     uint8_t lenet5_model_data[251388];
 
+    usart_send_blocking(USART1, '2');
+    usart_send_blocking(USART1, 'a');
+    usart_send_blocking(USART1, '\r');
+    usart_send_blocking(USART1, '\n');
+
     read.address.address = 0x000F0000;
     quadspi_wait_while_busy();
     quadspi_read(&read, data, 4);
+
+    usart_send_blocking(USART1, '2');
+    usart_send_blocking(USART1, 'b');
+    usart_send_blocking(USART1, '\r');
+    usart_send_blocking(USART1, '\n');
 
     uint8_t model_size_1 = (uint8_t)(data[0]);
     uint8_t model_size_2 = (uint8_t)(data[1]);
     uint8_t model_size_3 = (uint8_t)(data[2]);
     uint8_t model_size_4 = (uint8_t)(data[3]);
     uint32_t model_size = (model_size_1<<24)|(model_size_2<<16)|(model_size_3<<8)|(model_size_4<<0);
+    //test
+
+    usart_send_blocking(USART1, '2');
+    usart_send_blocking(USART1, 'c');
+    usart_send_blocking(USART1, '\r');
+    usart_send_blocking(USART1, '\n');
 
     read.address.address = 0x000F0004;
     quadspi_wait_while_busy();
     quadspi_read(&read, lenet5_model_data, model_size);
+
+    usart_send_blocking(USART1, '2');
+    usart_send_blocking(USART1, 'd');
+    usart_send_blocking(USART1, '\r');
+    usart_send_blocking(USART1, '\n');
+
 
     // Initialize the TensorFlow Lite Micro interpreter.
     tflm_init(lenet5_model_data);
 
     read.address.address = 0x00000000;
     float* input = tflm_get_input_buffer(0);
+    //float input[32*32];
     uint8_t input_data[32*32];
+
+    usart_send_blocking(USART1, '3');
+    usart_send_blocking(USART1, '\r');
+    usart_send_blocking(USART1, '\n');
 
     quadspi_wait_while_busy();
     quadspi_read(&read, input_data, 32*32);
@@ -124,11 +151,25 @@ void run_lenet5_cnn(void) {
         input[i] = (float)input_data[i];
     }
 
+    usart_send_blocking(USART1, '4');
+    usart_send_blocking(USART1, '\r');
+    usart_send_blocking(USART1, '\n');
+
     // Run inference.
     tflm_invoke();
 
+    usart_send_blocking(USART1, '5');
+    usart_send_blocking(USART1, '\r');
+    usart_send_blocking(USART1, '\n');
+    
     // Retrieve output predictions.
     const float* output = tflm_get_output_buffer(0);
+    //float output[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+    usart_send_blocking(USART1, '6');
+    usart_send_blocking(USART1, '\r');
+    usart_send_blocking(USART1, '\n');
+    
 
     usart_send_blocking(USART1, (uint8_t)output[0]);
     usart_send_blocking(USART1, ' ');
