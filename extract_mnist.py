@@ -20,10 +20,10 @@ data = []
 for i in range(32):
     for j in range(32):
         data.append(int(x_test[file][i][j]))
-        print(int(x_test[file][i][j]), end='\t')
+        print("%3d" % int(x_test[file][i][j]), end=' ')
     print('\n', end='')
 
-with open('testData', 'wb') as f:
+with open('mnistData', 'wb') as f:
   f.write(bytearray(data))
 
 print(y_test[file])
