@@ -1,0 +1,9 @@
+[submodule "libopencm3"]
+	path = libopencm3
+	url = git@github.com:vt-aoe-nanosat-avionics/libopencm3.git
+[submodule "tflite-micro"]
+	path = tflite-micro
+	url = git@github.com:tensorflow/tflite-micro.git
+[submodule "flatbuffers"]
+	path = flatbuffers
+	url = git@github.com:google/flatbuffers.git

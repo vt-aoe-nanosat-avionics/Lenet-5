@@ -21,24 +21,7 @@ y_val = y_train[-2000:]
 x_train = x_train[:-2000,:,:,:] 
 y_train = y_train[:-2000]
 
-
-model = models.Sequential()
-model.add(layers.Conv2D(6, 5, activation='tanh', input_shape=x_train.shape[1:]))
-model.add(layers.AveragePooling2D(2))
-model.add(layers.Activation('sigmoid'))
-model.add(layers.Conv2D(16, 5, activation='tanh'))
-model.add(layers.AveragePooling2D(2))
-model.add(layers.Activation('sigmoid'))
-model.add(layers.Conv2D(120, 5, activation='tanh'))
-model.add(layers.Flatten())
-model.add(layers.Dense(84, activation='tanh'))
-model.add(layers.Dense(10, activation='softmax'))
-model.summary()
-
-model.compile(optimizer='adam', loss=losses.sparse_categorical_crossentropy, metrics=['accuracy'])
-
-
-model.load_weights("training_1/cp.weights.h5")
+model = tf.keras.models.load_model("training/model.keras")
 
 
 # Convert the model.

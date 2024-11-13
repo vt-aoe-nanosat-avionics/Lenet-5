@@ -12,8 +12,8 @@ print()
 (x_train,y_train),(x_test,y_test) = datasets.mnist.load_data()
 print(x_train.shape)
 
-x_train = tf.pad(x_train, [[0, 0], [2,2], [2,2]])/255
-x_test = tf.pad(x_test, [[0, 0], [2,2], [2,2]])/255
+x_train = tf.pad(x_train, [[0, 0], [2,2], [2,2]])#/255
+x_test = tf.pad(x_test, [[0, 0], [2,2], [2,2]])#/255
 print(x_train.shape)
 
 x_train = tf.expand_dims(x_train, axis=3, name=None)
@@ -39,17 +39,9 @@ model.add(layers.Dense(84, activation='tanh'))
 model.add(layers.Dense(10, activation='softmax'))
 model.summary()
 
-checkpoint_path = "training_1/cp.weights.h5"
-checkpoint_dir = os.path.dirname(checkpoint_path)
-
-# Create a callback that saves the model's weights
-cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
-                                                 save_weights_only=True,
-                                                 verbose=1)
-
 
 model.compile(optimizer='adam', loss=losses.sparse_categorical_crossentropy, metrics=['accuracy'])
-history = model.fit(x_train, y_train, batch_size=64, epochs=40, validation_data=(x_val, y_val), callbacks=[cp_callback])
+history = model.fit(x_train, y_train, batch_size=64, epochs=40, validation_data=(x_val, y_val))
 
 
 
@@ -64,3 +56,5 @@ axs[1].title.set_text('Training Accuracy vs Validation Accuracy')
 axs[1].legend(['Train', 'Val'])
 
 model.evaluate(x_test, y_test)
+
+tf.keras.models.save_model(model, "training/model.keras")

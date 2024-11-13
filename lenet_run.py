@@ -5,14 +5,18 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import tensorflow as tf
 import matplotlib.pyplot as plt
-from tensorflow.keras import datasets, layers, models, losses
+import numpy as np
+import sys
+from tensorflow.keras import datasets
+
+image = int(sys.argv[1])
 
 
 (x_train,y_train),(x_test,y_test) = datasets.mnist.load_data()
 print(x_train.shape)
 
-x_train = tf.pad(x_train, [[0, 0], [2,2], [2,2]])/255
-x_test = tf.pad(x_test, [[0, 0], [2,2], [2,2]])/255
+x_train = tf.pad(x_train, [[0, 0], [2,2], [2,2]])#/255
+x_test = tf.pad(x_test, [[0, 0], [2,2], [2,2]])#/255
 print(x_train.shape)
 
 x_train = tf.expand_dims(x_train, axis=3, name=None)
@@ -25,22 +29,39 @@ x_train = x_train[:-2000,:,:,:]
 y_train = y_train[:-2000]
 
 
-model = models.Sequential()
-model.add(layers.Conv2D(6, 5, activation='tanh', input_shape=x_train.shape[1:]))
-model.add(layers.AveragePooling2D(2))
-model.add(layers.Activation('sigmoid'))
-model.add(layers.Conv2D(16, 5, activation='tanh'))
-model.add(layers.AveragePooling2D(2))
-model.add(layers.Activation('sigmoid'))
-model.add(layers.Conv2D(120, 5, activation='tanh'))
-model.add(layers.Flatten())
-model.add(layers.Dense(84, activation='tanh'))
-model.add(layers.Dense(10, activation='softmax'))
-model.summary()
+model = tf.keras.models.load_model("training/model.keras")
 
-model.compile(optimizer='adam', loss=losses.sparse_categorical_crossentropy, metrics=['accuracy'])
+predictions = model.predict(x_test)
 
 
-model.load_weights("training_1/cp.weights.h5")
+interpreter = tf.lite.Interpreter(model_path="model.tflite")
+interpreter.allocate_tensors()
 
-model.evaluate(x_test, y_test)
+# Get input and output tensors.
+input_details = interpreter.get_input_details()
+output_details = interpreter.get_output_details()
+
+input_data = np.array(np.random.random_sample(input_details[0]['shape']), dtype=np.float32)
+for i in range(32):
+    for j in range(32):
+        input_data[0][i][j][0] = x_test[image][i][j]
+        print(int(input_data[0][i][j][0]), end='\t')
+    print('\n', end='')
+print('\n')
+print(predictions[image])
+for i in range(32):
+    for j in range(32):
+        print(int(x_test[image][i][j]), end='\t')
+        test = 0
+    print('\n', end='')
+
+# Test model on random input data.
+input_shape = input_details[0]['shape']
+#input_data = x_test[0].numpy()
+interpreter.set_tensor(input_details[0]['index'], input_data)
+
+interpreter.invoke()
+output_data = interpreter.get_tensor(output_details[0]['index'])
+print(output_data)
+
+print(y_test[image])
