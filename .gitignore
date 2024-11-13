@@ -2,7 +2,9 @@
 build
 training_1
 
+
 *.ld
 *.o
 *.elf
 *.bin
+*.out
