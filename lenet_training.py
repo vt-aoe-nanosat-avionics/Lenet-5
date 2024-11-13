@@ -57,4 +57,4 @@ axs[1].legend(['Train', 'Val'])
 
 model.evaluate(x_test, y_test)
 
-tf.keras.models.save_model(model, "training/model.keras")
+tf.keras.models.save_model(model, "models/model.keras")
