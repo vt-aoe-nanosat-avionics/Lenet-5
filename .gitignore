@@ -7,4 +7,5 @@ mnistData
 *.o
 *.elf
 *.bin
+*.hex
 *.out
