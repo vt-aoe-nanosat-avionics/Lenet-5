@@ -54,8 +54,14 @@ arm-none-eabi-g++ -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -st
 
 ## 4. Compile and link main C code
 ```bash
-make
-arm-none-eabi-g++ -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wall -Wextra -specs=nosys.specs -c build/lenet.o build/tflm_wrapper.o libopencm3/lib/libopencm3_stm32l4.a tflite-micro/gen/cortex_m_generic_cortex-m4+fp_default_cmsis_nn_gcc/lib/libtensorflow-microlite.a -o build/lenet5.elf
+arm-none-eabi-gcc -Os -std=c99 -ggdb3 -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -fno-common -ffunction-sections -fdata-sections -Wextra -Wshadow -Wno-unused-variable -Wimplicit-function-declaration -Wredundant-decls -Wstrict-prototypes -Wmissing-prototypes  -MD -Wall -Wundef -I. -I. -Ilibopencm3/include -I. -I. -Ilibopencm3/include  -DSTM32L4 -DSTM32L496RGT3 -Ilibopencm3/include -o build/target_m4/lenet.o -c target_m4/lenet.c
+
+arm-none-eabi-gcc -E -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -DSTM32L4 -DSTM32L496RGT3 -D_ROM=1024K -D_RAM=256K -D_RAM2=64K -D_ROM_OFF=0x08000000 -D_RAM_OFF=0x20000000 -D_RAM2_OFF=0x10000000 -D_RAM3_OFF=0x20040000 -P -E libopencm3/ld/linker.ld.S -o generated.stm32l496rgt3.ld
+```
+
+## 5. Link
+```bash
+arm-none-eabi-g++ -Tgenerated.stm32l496rgt3.ld -Llibopencm3/lib -nostartfiles -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -specs=nosys.specs -Wl,--gc-sections -Llibopencm3/lib -Ltflite-micro/gen/cortex_m_generic_cortex-m4+fp_default_cmsis_nn_gcc/lib/ build/target_m4/lenet.o build/tflm_wrapper.o  -lopencm3_stm32l4  -ltensorflow-microlite -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group -o lenet_m4.elf
 ```
 
 ## 5. Create Bin
