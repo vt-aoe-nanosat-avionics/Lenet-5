@@ -21,7 +21,7 @@ y_val = y_train[-2000:]
 x_train = x_train[:-2000,:,:,:] 
 y_train = y_train[:-2000]
 
-model = tf.keras.models.load_model("training/model.keras")
+model = tf.keras.models.load_model("models/model.keras")
 
 
 # Convert the model.
@@ -29,5 +29,5 @@ converter = tf.lite.TFLiteConverter.from_keras_model(model)
 tflite_model = converter.convert()
 
 # Save the model.
-with open('model.tflite', 'wb') as f:
+with open('models/model.tflite', 'wb') as f:
   f.write(tflite_model)
