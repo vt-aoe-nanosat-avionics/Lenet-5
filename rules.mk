@@ -46,7 +46,7 @@ endif
 # Tool paths
 PREFIX ?= arm-none-eabi-
 CC = $(PREFIX)gcc
-LD = $(PREFIX)gcc
+LD = $(PREFIX)g++
 OBJCOPY = $(PREFIX)objcopy
 OBJDUMP = $(PREFIX)objdump
 OOCD ?= openocd
@@ -57,6 +57,7 @@ OPENCM3_INC = $(OPENCM3_DIR)/include
 INCLUDES += $(patsubst %,-I%, . $(OPENCM3_INC) )
 
 OBJS = $(CFILES:%.c=$(BUILD_DIR)/%.o)
+OBJS += $(CCFILES:%.cc=$(BUILD_DIR)/%.o)
 OBJS += $(AFILES:%.S=$(BUILD_DIR)/%.o)
 GENERATED_BINS = $(PROJECT).elf $(PROJECT).bin $(PROJECT).hex $(PROJECT).map $(PROJECT).list $(PROJECT).lss
 
@@ -83,6 +84,8 @@ TGT_LDFLAGS += -T$(LDSCRIPT) -L$(OPENCM3_DIR)/lib -nostartfiles
 TGT_LDFLAGS += $(ARCH_FLAGS)
 TGT_LDFLAGS += -specs=nano.specs
 TGT_LDFLAGS += -Wl,--gc-sections
+TGT_LDFLAGS += -Ltflite-micro/gen/cortex_m_generic_cortex-m4+fp_default_cmsis_nn_gcc/lib
+TGT_LDFLAGS += -specs=nosys.specs
 # OPTIONAL
 #TGT_LDFLAGS += -Wl,-Map=$(PROJECT).map
 ifeq ($(V),99)
@@ -96,6 +99,7 @@ endif
 # nosys is only in newer gcc-arm-embedded
 #LDLIBS += -specs=nosys.specs
 LDLIBS += -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group
+LDLIBS += -ltensorflow-microlite
 
 # Burn in legacy hell fortran modula pascal yacc etc
 .SUFFIXES:
@@ -128,10 +132,10 @@ $(BUILD_DIR)/%.o: %.c
 	@mkdir -p $(dir $@)
 	$(Q)$(CC) $(TGT_CFLAGS) $(CFLAGS) $(TGT_CPPFLAGS) $(CPPFLAGS) -o $@ -c $<
 
-$(BUILD_DIR)/%.o: %.cxx
-	@printf "  CXX\t$<\n"
+$(BUILD_DIR)/%.o: %.cc
+	@printf "  CC\t$<\n"
 	@mkdir -p $(dir $@)
-	$(Q)$(CC) $(TGT_CXXFLAGS) $(CXXFLAGS) $(TGT_CPPFLAGS) $(CPPFLAGS) -o $@ -c $<
+	$(Q)$(LD) $(ARCH_FLAGS) $(CXXSTD) -Wall -Wextra -Wno-unused-parameter -fno-threadsafe-statics -Itflite-micro/. -Itflite-micro/tensorflow/lite/micro/tools/make/downloads -Itflite-micro/tensorflow/lite/micro/tools/make/downloads/gemmlowp -Itflite-micro/tensorflow/lite/micro/tools/make/downloads/flatbuffers/include -Itflite-micro/tensorflow/lite/micro/tools/make/downloads/kissfft -Itflite-micro/tensorflow/lite/micro/tools/make/downloads/ruy -Itflite-micro/tensorflow/lite/micro/tools/make/downloads/cmsis/Cortex_DFP/Device/"ARMCM4"/Include -Itflite-micro/tensorflow/lite/micro -ltensorflow-microlite -o $@ -c $<
 
 $(BUILD_DIR)/%.o: %.S
 	@printf "  AS\t$<\n"
