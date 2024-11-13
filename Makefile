@@ -1,4 +1,4 @@
-PROJECT = lenet_m4
+PROJECT = lenet5
 BUILD_DIR = build
 
 CFILES = target_m4/lenet.c
