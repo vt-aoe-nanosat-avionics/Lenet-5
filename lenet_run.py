@@ -29,12 +29,12 @@ x_train = x_train[:-2000,:,:,:]
 y_train = y_train[:-2000]
 
 
-model = tf.keras.models.load_model("training/model.keras")
+model = tf.keras.models.load_model("models/model.keras")
 
 predictions = model.predict(x_test)
 
 
-interpreter = tf.lite.Interpreter(model_path="model.tflite")
+interpreter = tf.lite.Interpreter(model_path="models/model.tflite")
 interpreter.allocate_tensors()
 
 # Get input and output tensors.
