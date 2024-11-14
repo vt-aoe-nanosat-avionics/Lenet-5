@@ -16,10 +16,11 @@ OPENCM3_DIR=libopencm3
 
 LD = $(PREFIX)g++
 CXXSTD = -std=c++17
-INCLUDES += -I. -Itensorflow/lite/micro/tools/make/downloads -Itensorflow/lite/micro/tools/make/downloads/gemmlowp 
-INCLUDES += -Itensorflow/lite/micro/tools/make/downloads/flatbuffers/include -Itensorflow/lite/micro/tools/make/downloads/kissfft 
-INCLUDES += -Itensorflow/lite/micro/tools/make/downloads/ruy -Itensorflow/lite/micro/tools/make/downloads/cmsis/Cortex_DFP/Device/"ARMCM4"/Include 
-INCLUDES += -Itensorflow/lite/micro -Itensorflow/lite/micro/kernals
+INCLUDES += -I. -Itensorflow  
+INCLUDES += -Itensorflow/lite -Itensorflow/lite/c -Itensorflow/lite/core/api -Itensorflow/lite/core/c -Itensorflow/lite/kernals -Itensorflow/lite/kernals/internal -Itensorflow/lite/kernals/internal/optimized -Itensorflow/lite/kernals/internal/reference -Itensorflow/lite/kernals/internal/reference/integer_ops
+INCLUDES += -Itensorflow/lite/micro/ -Itensorflow/lite/micro/arena_allocator -Itensorflow/lite/micro/kernels 
+INCLUDES += -Itensorflow/lite/micro/memory_planner -Itensorflow/lite/micro/models -Itensorflow/lite/micro/tflite_bridge
+INCLUDES += -Itensorflow/lite/schema
 
 
 

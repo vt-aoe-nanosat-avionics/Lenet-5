@@ -84,7 +84,6 @@ TGT_LDFLAGS += -T$(LDSCRIPT) -L$(OPENCM3_DIR)/lib -nostartfiles
 TGT_LDFLAGS += $(ARCH_FLAGS)
 TGT_LDFLAGS += -specs=nano.specs
 TGT_LDFLAGS += -Wl,--gc-sections
-TGT_LDFLAGS += -Ltflite-micro/gen/cortex_m_generic_cortex-m4+fp_default_cmsis_nn_gcc/lib
 TGT_LDFLAGS += -specs=nosys.specs
 # OPTIONAL
 #TGT_LDFLAGS += -Wl,-Map=$(PROJECT).map
@@ -99,7 +98,6 @@ endif
 # nosys is only in newer gcc-arm-embedded
 #LDLIBS += -specs=nosys.specs
 LDLIBS += -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group
-LDLIBS += -ltensorflow-microlite
 
 # Burn in legacy hell fortran modula pascal yacc etc
 .SUFFIXES:
