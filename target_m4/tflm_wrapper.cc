@@ -1,33 +1,36 @@
-#include <
-#include <tensorflow/lite/micro/kernels/micro_ops.h>
-#include <tensorflow/lite/micro/micro_interpreter.h>
-#include <tensorflow/lite/micro/micro_mutable_op_resolver.h>
-#include <tensorflow/lite/micro/kernels/fully_connected.h>
+#include "tensorflow/lite/micro/micro_mutable_op_resolver.h"
+#include "tensorflow/lite/micro/tflite_bridge/micro_error_reporter.h"
+#include "tensorflow/lite/micro/micro_interpreter.h"
+#include "tensorflow/lite/schema/schema_generated.h"
 
 #include "tflm_wrapper.h"
 
 
 namespace {
-  const tflite::Model* model = nullptr;
-  tflite::MicroInterpreter* interpreter = nullptr;
-  tflite::MicroMutableOpResolver<7> micro_op_resolver;
-  TfLiteTensor* input = nullptr;
-  TfLiteTensor* output = nullptr;
+    tflite::ErrorReporter* error_reporter = nullptr;
+    const tflite::Model* model = nullptr;
+    tflite::MicroInterpreter* interpreter = nullptr;
+    TfLiteTensor* input = nullptr;
+    TfLiteTensor* output = nullptr;
 
-  constexpr int kTensorArenaSize = 41 * 1024; //  10 KB
-  __attribute__((aligned(16))) uint8_t tensor_arena[kTensorArenaSize];
+    constexpr int kTensorArenaSize = 41 * 1024; //  41 KB
+    __attribute__((aligned(16))) uint8_t tensor_arena[kTensorArenaSize];
 }  // namespace
 
 //void *__dso_handle = NULL;
 
 extern "C" int tflm_init(const uint8_t* model_data) {
-    model = ::tflite::GetModel(model_data);
+    tflite::MicroErrorReporter micro_error_reporter;
+    error_reporter = &micro_error_reporter;
 
-    micro_op_resolver.AddConv2D(tflite::Register_CONV_2D());
-    micro_op_resolver.AddAveragePool2D(tflite::Register_AVERAGE_POOL_2D());
-    micro_op_resolver.AddFullyConnected(tflite::Register_FULLY_CONNECTED());
+    model = tflite::GetModel(model_data);
+
+    static tflite::MicroMutableOpResolver<7> micro_op_resolver;
+    micro_op_resolver.AddConv2D();
+    micro_op_resolver.AddAveragePool2D();
+    micro_op_resolver.AddFullyConnected();
     micro_op_resolver.AddReshape();
-    micro_op_resolver.AddSoftmax(tflite::Register_SOFTMAX());
+    micro_op_resolver.AddSoftmax();
     micro_op_resolver.AddTanh();
     micro_op_resolver.AddLogistic();
 
