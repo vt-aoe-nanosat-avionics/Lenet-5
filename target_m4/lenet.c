@@ -101,7 +101,7 @@ void run_lenet5_cnn(void) {
     usart_send_blocking(USART1, '\r');
     usart_send_blocking(USART1, '\n');
 
-    read.address.address = 0x000F0000;
+    read.address.address = 0x0000F000;
     quadspi_wait_while_busy();
     quadspi_read(&read, data, 4);
 
@@ -115,14 +115,13 @@ void run_lenet5_cnn(void) {
     uint8_t model_size_3 = (uint8_t)(data[2]);
     uint8_t model_size_4 = (uint8_t)(data[3]);
     uint32_t model_size = (model_size_1<<24)|(model_size_2<<16)|(model_size_3<<8)|(model_size_4<<0);
-    //test
 
     usart_send_blocking(USART1, '2');
     usart_send_blocking(USART1, 'c');
     usart_send_blocking(USART1, '\r');
     usart_send_blocking(USART1, '\n');
 
-    read.address.address = 0x000F0004;
+    read.address.address = 0x0000F004;
     quadspi_wait_while_busy();
     quadspi_read(&read, lenet5_model_data, model_size);
 
@@ -133,7 +132,13 @@ void run_lenet5_cnn(void) {
 
 
     // Initialize the TensorFlow Lite Micro interpreter.
-    tflm_init(lenet5_model_data);
+    int test = tflm_init(lenet5_model_data);
+    usart_send_blocking(USART1, test);
+
+    usart_send_blocking(USART1, '3');
+    usart_send_blocking(USART1, 'a');
+    usart_send_blocking(USART1, '\r');
+    usart_send_blocking(USART1, '\n');
 
     read.address.address = 0x00000000;
     float* input = tflm_get_input_buffer(0);
@@ -141,6 +146,7 @@ void run_lenet5_cnn(void) {
     uint8_t input_data[32*32];
 
     usart_send_blocking(USART1, '3');
+    usart_send_blocking(USART1, 'b');
     usart_send_blocking(USART1, '\r');
     usart_send_blocking(USART1, '\n');
 

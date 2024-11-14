@@ -1,6 +1,8 @@
+#include <
 #include <tensorflow/lite/micro/kernels/micro_ops.h>
 #include <tensorflow/lite/micro/micro_interpreter.h>
 #include <tensorflow/lite/micro/micro_mutable_op_resolver.h>
+#include <tensorflow/lite/micro/kernels/fully_connected.h>
 
 #include "tflm_wrapper.h"
 
@@ -8,6 +10,7 @@
 namespace {
   const tflite::Model* model = nullptr;
   tflite::MicroInterpreter* interpreter = nullptr;
+  tflite::MicroMutableOpResolver<7> micro_op_resolver;
   TfLiteTensor* input = nullptr;
   TfLiteTensor* output = nullptr;
 
@@ -15,18 +18,16 @@ namespace {
   __attribute__((aligned(16))) uint8_t tensor_arena[kTensorArenaSize];
 }  // namespace
 
-void *__dso_handle = NULL;
+//void *__dso_handle = NULL;
 
-extern "C" void tflm_init(const uint8_t* model_data) {
+extern "C" int tflm_init(const uint8_t* model_data) {
     model = ::tflite::GetModel(model_data);
 
-    static tflite::MicroMutableOpResolver<7> micro_op_resolver;
-
-    micro_op_resolver.AddConv2D();
-    micro_op_resolver.AddAveragePool2D();
-    micro_op_resolver.AddFullyConnected();
+    micro_op_resolver.AddConv2D(tflite::Register_CONV_2D());
+    micro_op_resolver.AddAveragePool2D(tflite::Register_AVERAGE_POOL_2D());
+    micro_op_resolver.AddFullyConnected(tflite::Register_FULLY_CONNECTED());
     micro_op_resolver.AddReshape();
-    micro_op_resolver.AddSoftmax();
+    micro_op_resolver.AddSoftmax(tflite::Register_SOFTMAX());
     micro_op_resolver.AddTanh();
     micro_op_resolver.AddLogistic();
 
@@ -34,6 +35,7 @@ extern "C" void tflm_init(const uint8_t* model_data) {
     interpreter = &static_interpreter;
 
     interpreter->AllocateTensors();
+    return 0;
 }
 
 extern "C" float* tflm_get_input_buffer(int index) {
