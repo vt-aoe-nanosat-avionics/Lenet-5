@@ -43,7 +43,7 @@ extern "C" float* tflm_get_input_buffer(int index) {
     return input ? input->data.f : nullptr;
 }
 
-extern "C" const float* tflm_get_output_buffer(int index) {
+extern "C" float* tflm_get_output_buffer(int index) {
     if (!interpreter) return nullptr;
     output = interpreter->output(index);
     return output ? output->data.f : nullptr;
