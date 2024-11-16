@@ -27,7 +27,7 @@ g++ -std=c++17 -fno-rtti -fno-exceptions -fno-threadsafe-statics -Wnon-virtual-d
 
 ## 3. Compile main C code
 ```bash
-g++ target_x86/lenet.c target_x86/model_data.cc build/tflm_wrapper.o tflite-micro/gen/linux_x86_64_default_gcc/lib/libtensorflow-microlite.a -o lenet5.out
+g++ target_x86/lenet.c target_x86/model_data.cc build/target_x86/tflm_wrapper.o tflite-micro/gen/linux_x86_64_default_gcc/lib/libtensorflow-microlite.a -o lenet5.out
 ```
 
 
