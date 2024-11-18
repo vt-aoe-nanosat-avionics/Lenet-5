@@ -1,6 +1,5 @@
 
 # Setting Up Virtual Environment
-### (Only needs to be done for training)
 
 ```bash
 sudo apt install python3.10-venv
