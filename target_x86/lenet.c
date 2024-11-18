@@ -121,7 +121,7 @@ void run_lenet5_cnn(void) {
     // Prepare input data (28x28 grayscale image for LeNet-5).
     float* input = tflm_get_input_buffer(0);
 
-    uint8_t input_data[28*28];
+    uint8_t input_data[32*32];
     int len;
     FILE *fp = fopen("mnistData", "rb");
     if(!fp) {
@@ -143,6 +143,12 @@ void run_lenet5_cnn(void) {
     // Populate the input buffer with test data.
     for (int i = 0; i < 32 * 32; i++) {
         input[i] = input_data[i]; // Replace with actual image data.
+    }
+    for (int i = 0; i < 32; i++) {
+        for (int j = 0; j < 32; j++) {
+            printf("%3d ", (uint8_t)input[i*32+j]);
+        }
+        printf("\n");
     }
 
     // Run inference.

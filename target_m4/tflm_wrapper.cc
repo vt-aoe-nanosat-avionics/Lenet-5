@@ -5,11 +5,11 @@
 
 #include "tflm_wrapper.h"
 
+#define INPUT_SIZE 32*32
 
 namespace {
   const tflite::Model* model = nullptr;
   tflite::MicroInterpreter* interpreter = nullptr;
-  tflite::MicroMutableOpResolver<7> micro_op_resolver;
   TfLiteTensor* input = nullptr;
   TfLiteTensor* output = nullptr;
 
@@ -21,6 +21,8 @@ namespace {
 
 extern "C" int tflm_init(const uint8_t* model_data) {
     model = ::tflite::GetModel(model_data);
+
+    static tflite::MicroMutableOpResolver<7> micro_op_resolver;
 
     micro_op_resolver.AddConv2D(tflite::Register_CONV_2D());
     micro_op_resolver.AddAveragePool2D(tflite::Register_AVERAGE_POOL_2D());
@@ -34,7 +36,7 @@ extern "C" int tflm_init(const uint8_t* model_data) {
     interpreter = &static_interpreter;
 
     interpreter->AllocateTensors();
-    return 0;
+    return sizeof(TfLiteTensor);
 }
 
 extern "C" float* tflm_get_input_buffer(int index) {
@@ -43,7 +45,7 @@ extern "C" float* tflm_get_input_buffer(int index) {
     return input ? input->data.f : nullptr;
 }
 
-extern "C" float* tflm_get_output_buffer(int index) {
+extern "C" const float* tflm_get_output_buffer(int index) {
     if (!interpreter) return nullptr;
     output = interpreter->output(index);
     return output ? output->data.f : nullptr;
