@@ -94,18 +94,18 @@ int main(void) {
 
 void run_lenet5_cnn(void) {
 
-    uint8_t data[4];
-    uint8_t lenet5_model_data[251388];
+    //uint8_t data[4];
+    //uint8_t lenet5_model_data[251388];
 
     //read.address.address = 0x000F0000;
     //quadspi_wait_while_busy();
     //quadspi_read(&read, data, 4);
 
-    uint8_t model_size_1 = (uint8_t)(data[0]);
-    uint8_t model_size_2 = (uint8_t)(data[1]);
-    uint8_t model_size_3 = (uint8_t)(data[2]);
-    uint8_t model_size_4 = (uint8_t)(data[3]);
-    uint32_t model_size = (model_size_1<<24)|(model_size_2<<16)|(model_size_3<<8)|(model_size_4<<0);
+    //uint8_t model_size_1 = (uint8_t)(data[0]);
+    //uint8_t model_size_2 = (uint8_t)(data[1]);
+    //uint8_t model_size_3 = (uint8_t)(data[2]);
+    //uint8_t model_size_4 = (uint8_t)(data[3]);
+    //uint32_t model_size = (model_size_1<<24)|(model_size_2<<16)|(model_size_3<<8)|(model_size_4<<0);
 
     //read.address.address = 0x000F0004;
     //quadspi_wait_while_busy();

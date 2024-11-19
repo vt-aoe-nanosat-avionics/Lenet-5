@@ -9,7 +9,7 @@
 #include <libopencm3/stm32/quadspi.h>
 #include "IS25LP128F.h"
 
-#include "../target_x86/model_data.h"
+#include "model_data.h"
 
 
 struct quadspi_command read = {
@@ -91,55 +91,15 @@ int main(void) {
 
 int run_lenet5_cnn(void) {
 
-    //uint8_t data[4];
-    //uint8_t lenet5_model_data[251388];
-
-    //usart_send_blocking(USART1, '2');
-    //usart_send_blocking(USART1, 'a');
-    //usart_send_blocking(USART1, '\r');
-    //usart_send_blocking(USART1, '\n');
-
-    read.address.address = 0x0000F000;
-    //quadspi_wait_while_busy();
-    //quadspi_read(&read, data, 4);
-
-    //usart_send_blocking(USART1, '2');
-    //usart_send_blocking(USART1, 'b');
-    //usart_send_blocking(USART1, '\r');
-    //usart_send_blocking(USART1, '\n');
-
-    //uint8_t model_size_1 = (uint8_t)(data[0]);
-    //uint8_t model_size_2 = (uint8_t)(data[1]);
-    //uint8_t model_size_3 = (uint8_t)(data[2]);
-    //uint8_t model_size_4 = (uint8_t)(data[3]);
-    //uint32_t model_size = (model_size_1<<24)|(model_size_2<<16)|(model_size_3<<8)|(model_size_4<<0);
-
-    //usart_send_blocking(USART1, '2');
-    //usart_send_blocking(USART1, 'c');
-    //usart_send_blocking(USART1, '\r');
-    //usart_send_blocking(USART1, '\n');
+    char string[9];
 
     read.address.address = 0x0000F004;
     quadspi_wait_while_busy();
-    //quadspi_read(&read, lenet5_model_data, model_size);
-
-    //usart_send_blocking(USART1, '2');
-    //usart_send_blocking(USART1, 'd');
-    //usart_send_blocking(USART1, '\r');
-    //usart_send_blocking(USART1, '\n');
-
+    quadspi_read(&read, lenet_model_tflite, lenet_model_tflite_len);
 
     // Initialize the TensorFlow Lite Micro interpreter.
-    //int test = tflm_init(lenet5_model_data);
-    char string[9];
-    int test = tflm_init(lenet_model_tflite);
-    sprintf(string, "%.2d", test);
-    usart_send_blocking(USART1, string[0]);
-    usart_send_blocking(USART1, string[1]);
+    tflm_init(lenet_model_tflite);
 
-
-    //usart_send_blocking(USART1, '3');
-    //usart_send_blocking(USART1, 'a');
     usart_send_blocking(USART1, '\r');
     usart_send_blocking(USART1, '\n');
 
@@ -161,48 +121,15 @@ int run_lenet5_cnn(void) {
     quadspi_wait_while_busy();
     quadspi_read(&read, input_data, 32*32);
 
-    for(int i = 0; i < 32; i++)
-    {
-        for(int j = 0; j < 32; j++)
-        {
-            uint8_t val = input_data[i*32+j];
-            if(val < 10)
-            {
-                sprintf(string, "%.3d", val);
-                usart_send_blocking(USART1, ' ');
-                usart_send_blocking(USART1, ' ');
-                usart_send_blocking(USART1, string[0]);
-            }
-            else if(val < 100)
-            {
-                sprintf(string, "%.3d", val);
-                usart_send_blocking(USART1, ' ');
-                usart_send_blocking(USART1, string[0]);
-                usart_send_blocking(USART1, string[1]);
-            }
-            else
-            {
-                sprintf(string, "%.3d", val);
-                usart_send_blocking(USART1, string[0]);
-                usart_send_blocking(USART1, string[1]);
-                usart_send_blocking(USART1, string[2]);
-            }
-            usart_send_blocking(USART1, ' ');
-        }
-        usart_send_blocking(USART1, '\r');
-        usart_send_blocking(USART1, '\n');
-    }
-
     for (int i = 0; i < 32*32; i++) {
-        *(input+i) = input_data[i];
+        input[i] = input_data[i];
     }
-    input[0] = 100;
 
     for(int i = 0; i < 32; i++)
     {
         for(int j = 0; j < 32; j++)
         {
-            uint8_t val = input[i*32+j];
+            uint8_t val = (uint8_t)input[i*32+j];
             if(val < 10)
             {
                 sprintf(string, "%.3d", val);
@@ -234,8 +161,7 @@ int run_lenet5_cnn(void) {
     tflm_invoke();
 
     // Retrieve output predictions.
-    const float* output = tflm_get_output_buffer(0);
-    //float output[] = {0.987654, 0, 0, 0, 0, 0, 0, 0, 0, 100000000000000000};
+    float* output = tflm_get_output_buffer(0);
 
     sprintf(string, "Output: ");
     for(int j = 0; j < 8; j++)

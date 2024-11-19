@@ -8,13 +8,13 @@ extern "C" {
 #endif
 
 // Initialize the TensorFlow Lite Micro interpreter with a model.
-int tflm_init(const uint8_t* model_data);
+void tflm_init(const uint8_t* model_data);
 
 // Get the input tensor buffer.
 float* tflm_get_input_buffer(int index);
 
 // Get the output tensor buffer.
-const float* tflm_get_output_buffer(int index);
+float* tflm_get_output_buffer(int index);
 
 // Invoke the model.
 void tflm_invoke(void);

@@ -21,6 +21,7 @@ INCLUDES += -I. -Itensorflow/lite/micro/tools/make/downloads -Itensorflow/lite/m
 INCLUDES += -Itensorflow/lite/micro/tools/make/downloads/flatbuffers/include -Itensorflow/lite/micro/tools/make/downloads/kissfft 
 INCLUDES += -Itensorflow/lite/micro/tools/make/downloads/ruy -Itensorflow/lite/micro/tools/make/downloads/cmsis/Cortex_DFP/Device/"ARMCM4"/Include 
 INCLUDES += -Itensorflow/lite/micro -Itensorflow/lite/micro/kernals
+TF_LITE_STATIC_MEMORY=1
 
 
 

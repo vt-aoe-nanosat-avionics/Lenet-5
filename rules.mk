@@ -84,7 +84,7 @@ TGT_LDFLAGS += -T$(LDSCRIPT) -L$(OPENCM3_DIR)/lib -nostartfiles
 TGT_LDFLAGS += $(ARCH_FLAGS)
 TGT_LDFLAGS += -specs=nano.specs
 TGT_LDFLAGS += -Wl,--gc-sections
-TGT_LDFLAGS += -Ltflite-micro/gen/cortex_m_generic_cortex-m4+fp_default_cmsis_nn_gcc/lib
+TGT_LDFLAGS += -Ltflite-micro/gen/cortex_m_generic_cortex-m4+fp_no_tf_lite_static_memory_cmsis_nn_gcc/lib
 TGT_LDFLAGS += -specs=nosys.specs
 # OPTIONAL
 #TGT_LDFLAGS += -Wl,-Map=$(PROJECT).map
