@@ -1,7 +1,11 @@
-PROJECT = lenet5
+PROJECT = flight-cnn-blr
 BUILD_DIR = build
 
-CFILES = target_m4/lenet.c
+TA_EXPT_DIR = ./target_m4/ta-expt
+CFILE = target_m4/flight_cnn_blr.c
+CFILES += target_m4/lenet.c
+CFILES += bootloader.c taolst_protocol.c
+
 CCFILES = target_m4/tflm_wrapper.cc
 CCFILES += target_x86/model_data.cc
 
@@ -12,16 +16,14 @@ OOCD_FILE = board/stm32l4-generic.cfg
 # All lines below probably should not be edited
 VPATH += $(TA_EXPT_DIR)
 INCLUDES += $(patsubst %,-I%, . $(TA_EXPT_DIR))
+INCLUDES += $(patsubst %,-I%, . ./target_m4)
 OPENCM3_DIR=libopencm3
 
-
-LD = $(PREFIX)g++
 CXXSTD = -std=c++17
 INCLUDES += -I. -Itensorflow/lite/micro/tools/make/downloads -Itensorflow/lite/micro/tools/make/downloads/gemmlowp 
 INCLUDES += -Itensorflow/lite/micro/tools/make/downloads/flatbuffers/include -Itensorflow/lite/micro/tools/make/downloads/kissfft 
 INCLUDES += -Itensorflow/lite/micro/tools/make/downloads/ruy -Itensorflow/lite/micro/tools/make/downloads/cmsis/Cortex_DFP/Device/"ARMCM4"/Include 
 INCLUDES += -Itensorflow/lite/micro -Itensorflow/lite/micro/kernals
-TF_LITE_STATIC_MEMORY=1
 
 
 
