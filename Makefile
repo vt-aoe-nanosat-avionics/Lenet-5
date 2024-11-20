@@ -2,7 +2,7 @@ PROJECT = flight-cnn-blr
 BUILD_DIR = build
 
 TA_EXPT_DIR = ./target_m4/ta-expt
-CFILE = target_m4/flight_cnn_blr.c
+CFILES = target_m4/flight_cnn_blr.c
 CFILES += target_m4/lenet.c
 CFILES += bootloader.c taolst_protocol.c
 

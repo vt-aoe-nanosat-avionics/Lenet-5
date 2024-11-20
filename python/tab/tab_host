@@ -25,6 +25,10 @@ import readline # file path autocompletion
 import colorama # color
 import signal # signal handling
 import re
+import struct
+from tensorflow.keras import datasets
+import tensorflow as tf
+import matplotlib.pyplot as plt
 
 # Make Python TAB implementation visible
 sys.path.append(os.path.dirname(os.path.abspath(__file__))+'/python-implementation')
@@ -32,6 +36,9 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__))+'/python-implementati
 # import TAB support
 from tab import *
 
+################################################################################
+def ints_to_bytes(ints):
+  return bytes(ints)
 ################################################################################
 
 # initialize script arguments
@@ -751,6 +758,44 @@ class tabCommands(Cmd):
         verbose = False
         break
 
+  def do_app_infer(self, line):
+    """    
+    """
+    rx_cmd_buff = RxCmdBuff()
+    opts = line.split(' ')
+
+    verbose = True
+    for x in opts:
+      if x == '-v':
+        verbose = False
+        break
+      
+    cmd = TxCmd(APP_INFER_OPCODE, HWID, self.msgid, GND, CDH)
+    byte_i = 0
+    while rx_cmd_buff.state != RxCmdBuffState.COMPLETE:
+      if byte_i < cmd.get_byte_count():
+        self.serial_port.write(cmd.data[byte_i].to_bytes(1, byteorder='big'))
+        byte_i += 1
+      if self.serial_port.in_waiting>0:
+        bytes = self.serial_port.read(1)
+        for b in bytes:
+          rx_cmd_buff.append_byte(b)
+    
+    if verbose == True:
+      print('txcmd: '+str(cmd))
+      print('reply: '+str(rx_cmd_buff)+'\n')
+
+    test = rx_cmd_buff.data[PLD_START_INDEX:PLD_START_INDEX+40]
+    test2 = ints_to_bytes(test)
+    confidence = []
+    for x in range(0,10):
+      temp = test2[x*4:(x*4)+4]
+      confidence.append(f"{round(struct.unpack('<f', temp)[0],6):.6f}")
+    print(confidence)
+
+    self.msgid += 1
+    
+
 
 
 
@@ -979,6 +1024,39 @@ class tabCommands(Cmd):
           return glob.glob(path+'*')
     else:
         return self.write_file_options
+    
+  def do_cnn_write_mnist(self, line):
+    """    This function tests the write and read file functions
+    """
+    try:
+      file = int(sys.argv[1])
+    except:
+      file = 0
+
+    (x_train,y_train),(x_test,y_test) = datasets.mnist.load_data()
+
+    x_train = tf.pad(x_train, [[0, 0], [2,2], [2,2]])#/255
+    x_test = tf.pad(x_test, [[0, 0], [2,2], [2,2]])#/255
+
+    x_train = tf.expand_dims(x_train, axis=3, name=None)
+    x_test = tf.expand_dims(x_test, axis=3, name=None)
+
+    data = []
+
+    for i in range(32):
+        for j in range(32):
+            data.append(int(x_test[file][i][j]))
+
+    with open('mnistData', 'wb') as f:
+      f.write(bytearray(data))
+
+    #print(y_test[file])
+    fig = plt.figure()
+    plt.imshow(x_test[file], cmap='gray')
+    plt.show(block=False)
+
+    self.do_erase_sectors('0x00000000 1')
+    self.do_write_file('mnistData 0x00000000')
 
 
 

@@ -793,10 +793,10 @@ void write_reply(rx_cmd_buff_t* rx_cmd_buff_o, tx_cmd_buff_t* tx_cmd_buff_o) {
           tx_cmd_buff_o->data[OPCODE_INDEX] = COMMON_NACK_OPCODE;
         }
         else {
-          tx_cmd_buff_o->data[MSG_LEN_INDEX] = ((uint8_t)(0x06+10));
+          tx_cmd_buff_o->data[MSG_LEN_INDEX] = ((uint8_t)(0x06+40));
           tx_cmd_buff_o->data[OPCODE_INDEX] = COMMON_DATA_OPCODE;
-          for(int j = 0; j < 10; j++) {
-            tx_cmd_buff_o->data[DATA_START_INDEX+j] = data[j];
+          for(int j = 0; j < 40; j++) {
+            tx_cmd_buff_o->data[DATA_START_INDEX+j] = ((uint8_t*)data)[j];
           }
         }
         break;

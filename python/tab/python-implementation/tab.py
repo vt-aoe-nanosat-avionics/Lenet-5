@@ -26,6 +26,7 @@ APP_GET_TIME_OPCODE                 = 0x13
 APP_REBOOT_OPCODE                   = 0x12
 APP_SET_TIME_OPCODE                 = 0x14
 APP_TELEM_OPCODE                    = 0x18
+APP_INFER_OPCODE                    = 0x19
 COMMON_ACK_OPCODE                   = 0x10
 COMMON_NACK_OPCODE                  = 0xff
 COMMON_DEBUG_OPCODE                 = 0x11
@@ -422,6 +423,8 @@ def cmd_bytes_to_str(data):
     ns  = (data[PLD_START_INDEX+4]<<0)|(data[PLD_START_INDEX+5]<<8)|\
           (data[PLD_START_INDEX+6]<<16)|(data[PLD_START_INDEX+7]<<24)
     pld_str += ' sec:'+str(sec)+' ns:'+str(ns)
+  elif data[OPCODE_INDEX] == APP_INFER_OPCODE:
+    cmd_str += 'app_infer'
   # string construction common to all commands
   cmd_str += ' hw_id:0x{:04x}'.format(\
    (data[HWID_MSB_INDEX]<<8)|(data[HWID_LSB_INDEX]<<0)\
@@ -514,6 +517,8 @@ class TxCmd:
       self.data[MSG_LEN_INDEX] = 0x06
     elif self.data[OPCODE_INDEX] == APP_SET_TIME_OPCODE:
       self.data[MSG_LEN_INDEX] = 0x0e
+    elif self.data[OPCODE_INDEX] == APP_INFER_OPCODE:
+      self.data[MSG_LEN_INDEX] = 0x06
     else:
       self.data[MSG_LEN_INDEX] = 0x06
 
