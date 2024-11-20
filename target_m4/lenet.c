@@ -9,7 +9,7 @@
 #include <libopencm3/stm32/quadspi.h>
 #include "IS25LP128F.h"
 
-//#include "model_data.h"
+#include "../target_x86/model_data.h"
 
 
 struct quadspi_command read = {
@@ -40,8 +40,8 @@ struct quadspi_command enableWrite_single = {
     .data_mode = QUADSPI_CCR_MODE_NONE
 };
 
-const unsigned char lenet_model_tflite[251384];
-unsigned int lenet_model_tflite_len = 251384;
+//const unsigned char lenet_model_tflite[251384];
+//unsigned int lenet_model_tflite_len = 251384;
 
 int run_lenet5_cnn(void);
 
@@ -97,7 +97,7 @@ int run_lenet5_cnn(void) {
 
     read.address.address = 0x0000F004;
     quadspi_wait_while_busy();
-    quadspi_read(&read, lenet_model_tflite, lenet_model_tflite_len);
+    //quadspi_read(&read, lenet_model_tflite, lenet_model_tflite_len);
 
     // Initialize the TensorFlow Lite Micro interpreter.
     tflm_init(lenet_model_tflite);
