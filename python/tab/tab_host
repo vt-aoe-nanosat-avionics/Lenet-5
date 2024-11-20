@@ -26,6 +26,7 @@ import colorama # color
 import signal # signal handling
 import re
 import struct
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 from tensorflow.keras import datasets
 import tensorflow as tf
 import matplotlib.pyplot as plt
@@ -69,6 +70,7 @@ class tabCommands(Cmd):
     super().__init__()
     colorama.init()
     # Create serial object
+    
     try:
       self.serial_port = serial.Serial(port=dev,baudrate=921600)
     except:
@@ -1028,8 +1030,9 @@ class tabCommands(Cmd):
   def do_cnn_write_mnist(self, line):
     """    This function tests the write and read file functions
     """
+    opts = line.split(' ')
     try:
-      file = int(sys.argv[1])
+      file = int(opts[0])
     except:
       file = 0
 
