@@ -1,5 +1,5 @@
 tensorflow==2.18.0
 matplotlib==3.9.2
-serial==0.0.97
+pyserial==3.5
 colorama==0.4.6
 
