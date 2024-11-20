@@ -24,6 +24,7 @@ import glob   # file path autocompletion
 import readline # file path autocompletion
 import colorama # color
 import signal # signal handling
+import re
 
 # Make Python TAB implementation visible
 sys.path.append(os.path.dirname(os.path.abspath(__file__))+'/python-implementation')
@@ -932,16 +933,52 @@ class tabCommands(Cmd):
     file.write(bytearray(file_data))
     file.close()
 
-  def do_test_files(self, line):
+  def do_cnn_write_model(self, line):
     """    This function tests the write and read file functions
     """
-    for i in range(0,10):
-      print(i+1)
-      self.do_erase_sectors('0x00001000 1150 -v')
-      time.sleep(10)
-      self.do_write_file('video.mp4 0x00001000 -v')
-      input = '0x00001000 readFiles/video'+str(i)+' -v'
-      self.do_read_file(input)
+    rx_cmd_buff = RxCmdBuff()
+    opts = line.split(' ')
+
+    verbose = True
+    for x in opts:
+      if x == '-v':
+        verbose = False
+        break
+    #try:
+    #  address = int(opts[0],16)
+    #except:
+    #  print('ERROR: "' + opts[0] + '" is an invalid address')
+    #  return
+    
+    filename = opts[0]
+    #os.system('xxd -i ' + filename + ' > temp.cc')
+    #file = open('temp.cc', 'r')
+    file = open(filename, 'r')
+    file_data = file.read()
+    file.close()
+    #os.system('rm temp.cc')
+    file_data = ''.join(file_data.split())
+    file_data = re.split(',|{|}', file_data)
+    for x in file_data:
+      try:
+        x = int(x, 16)
+      except:
+        file_data.remove(x)
+    file_data = bytes([int(x,0) for x in file_data])
+    
+    with open('test', 'wb') as f:
+      f.write(file_data)
+
+  def complete_cnn_write_model(self, text, line, start_index, end_index):
+    opts = line.split(' ')[1:]
+    if text and len(opts) == 1: # if I already started typing the option, filter the existing options
+        path = text
+        if os.path.isdir(path):
+          return glob.glob(os.path.join(path, '*'))
+        else:
+          return glob.glob(path+'*')
+    else:
+        return self.write_file_options
 
 
 
