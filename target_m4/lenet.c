@@ -13,22 +13,22 @@
 
 
 struct quadspi_command read = {
-.instruction.mode = QUADSPI_CCR_MODE_4LINE,
-.instruction.instruction = IS25LP128F_CMD_FAST_READ,
-.address.mode = QUADSPI_CCR_MODE_4LINE,
-.address.size = QUADSPI_CCR_SIZE_32BIT,
-.alternative_bytes.mode = QUADSPI_CCR_MODE_NONE,
-.dummy_cycles = 6,
-.data_mode = QUADSPI_CCR_MODE_4LINE
+    .instruction.mode = QUADSPI_CCR_MODE_4LINE,
+    .instruction.instruction = IS25LP128F_CMD_FAST_READ,
+    .address.mode = QUADSPI_CCR_MODE_4LINE,
+    .address.size = QUADSPI_CCR_SIZE_32BIT,
+    .alternative_bytes.mode = QUADSPI_CCR_MODE_NONE,
+    .dummy_cycles = 6,
+    .data_mode = QUADSPI_CCR_MODE_4LINE
 };
 
 struct quadspi_command enableQPI = {
-.instruction.mode = QUADSPI_CCR_MODE_1LINE,
-.instruction.instruction = IS25LP128F_CMD_ENTER_QPI_MODE,
-.alternative_bytes.mode = QUADSPI_CCR_MODE_NONE,
-.address.mode = QUADSPI_CCR_MODE_NONE,
-.dummy_cycles = 0,
-.data_mode = QUADSPI_CCR_MODE_NONE
+    .instruction.mode = QUADSPI_CCR_MODE_1LINE,
+    .instruction.instruction = IS25LP128F_CMD_ENTER_QPI_MODE,
+    .alternative_bytes.mode = QUADSPI_CCR_MODE_NONE,
+    .address.mode = QUADSPI_CCR_MODE_NONE,
+    .dummy_cycles = 0,
+    .data_mode = QUADSPI_CCR_MODE_NONE
 };
 
 struct quadspi_command enableWrite_single = {
