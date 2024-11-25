@@ -2,7 +2,6 @@
 #include <tensorflow/lite/micro/micro_interpreter.h>
 #include <tensorflow/lite/micro/micro_mutable_op_resolver.h>
 #include <tensorflow/lite/micro/kernels/fully_connected.h>
-#include <tensorflow/lite/micro/system_setup.h>
 
 #include "tflm_wrapper.h"
 
@@ -19,8 +18,7 @@ namespace {
 //void *__dso_handle = NULL;
 
 extern "C" void tflm_init(const uint8_t* model_data) {
-    tflite::InitializeTarget();
-    model = tflite::GetModel(model_data);
+    model = ::tflite::GetModel(model_data);
 
     static tflite::MicroMutableOpResolver<7> micro_op_resolver;
 
