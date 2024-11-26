@@ -1014,12 +1014,15 @@ class tabCommands(Cmd):
         file_data.remove(x)
     file_data = bytes([int(x,0) for x in file_data])
     
-    with open('test', 'wb') as f:
+    with open('temp', 'wb') as f:
       f.write(file_data)
 
-    self.do_write_file('test 0x0000F000')
+    filesize = os.path.getsize('temp')
+    options = '0x0000F000 ' + str(math.ceil(filesize/4096))
+    self.do_erase_sectors(options)
+    self.do_write_file('temp 0x0000F000')
 
-    os.system('rm test')
+    os.system('rm temp')
 
   def complete_cnn_write_model(self, text, line, start_index, end_index):
     opts = line.split(' ')[1:]
