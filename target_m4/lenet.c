@@ -40,6 +40,8 @@ struct quadspi_command enableWrite_single = {
     .data_mode = QUADSPI_CCR_MODE_NONE
 };
 
+const unsigned char* lenet5_model_tflite = (unsigned char*)0x9000F004;
+
 //const unsigned char lenet_model_tflite[251384];
 //unsigned int lenet_model_tflite_len = 251384;
 
@@ -110,19 +112,9 @@ int main(void) {
 
 int run_lenet5_cnn(void) {
     char string[9];
-    unsigned char* lenet5_model_tflite = (unsigned char*)0x9000F004;
     uint8_t* data = (uint8_t*)0x9000F000;
-
     unsigned int lenet5_model_tflite_len = (data[0]<<24)|(data[1]<<16)|(data[2]<<8)|(data[3]<<0);
 
-    sprintf(string, "%06d", lenet5_model_tflite_len);
-    for(int i = 0; i < 6; i++)
-    {
-        usart_send_blocking(USART1, string[i]);
-    }
-    usart_send_blocking(USART1, '\r');
-    usart_send_blocking(USART1, '\n');
-    return 1;
     //read.address.address = 0x0000F004;
     //quadspi_wait_while_busy();
     //quadspi_read(&read, lenet_model_tflite, lenet_model_tflite_len);
@@ -130,8 +122,7 @@ int run_lenet5_cnn(void) {
 
     usart_send_blocking(USART1, 'S');
     // Initialize the TensorFlow Lite Micro interpreter.
-    //tflm_init(lenet_model_tflite);
-    usart_send_blocking(USART1, 'S');
+    tflm_init(lenet5_model_tflite);
 
     usart_send_blocking(USART1, '\r');
     usart_send_blocking(USART1, '\n');
@@ -141,15 +132,15 @@ int run_lenet5_cnn(void) {
     //float input[32*32];
     uint8_t* input_data = (uint8_t*)0x90000004;
 
-    //if(input == NULL)
-    //{
-    //    usart_send_blocking(USART1, 'E');
-    //    usart_send_blocking(USART1, 'R');
-    //    usart_send_blocking(USART1, 'R');
-    //    usart_send_blocking(USART1, '\r');
-    //    usart_send_blocking(USART1, '\n');
-    //    return 1;
-    //}
+    if(input == NULL)
+    {
+        usart_send_blocking(USART1, 'E');
+        usart_send_blocking(USART1, 'R');
+        usart_send_blocking(USART1, 'R');
+        usart_send_blocking(USART1, '\r');
+        usart_send_blocking(USART1, '\n');
+        return 1;
+    }
 
     //quadspi_wait_while_busy();
     //quadspi_read(&read, input_data, 32*32);
