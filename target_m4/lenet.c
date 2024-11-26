@@ -111,9 +111,11 @@ int main(void) {
 int run_lenet5_cnn(void) {
     char string[9];
     unsigned char* lenet5_model_tflite = (unsigned char*)0x9000F004;
-    unsigned int lenet5_model_tflite_len = *(unsigned int*)0x9000F000;
+    uint8_t* data = (uint8_t*)0x9000F000;
 
-    sprintf(string, "%d", lenet5_model_tflite_len);
+    unsigned int lenet5_model_tflite_len = (data[0]<<24)|(data[1]<<16)|(data[2]<<8)|(data[3]<<0);
+
+    sprintf(string, "%06d", lenet5_model_tflite_len);
     for(int i = 0; i < 6; i++)
     {
         usart_send_blocking(USART1, string[i]);
