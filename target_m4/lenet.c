@@ -7,7 +7,7 @@
 #include <libopencm3/stm32/quadspi.h>
 #include "ta-expt/IS25LP128F.h"
 
-#include "model_data.h"
+#include "../target_x86/model_data.h"
 #include "lenet.h"
 
 

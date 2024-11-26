@@ -7,6 +7,7 @@ CFILES += target_m4/lenet.c
 CFILES += bootloader.c taolst_protocol.c
 
 CCFILES = target_m4/tflm_wrapper.cc
+#CCFILES += target_m4/model_data.cc
 CCFILES += target_x86/model_data.cc
 
 # Edit these two lines as needed

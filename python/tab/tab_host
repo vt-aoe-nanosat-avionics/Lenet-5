@@ -1017,6 +1017,10 @@ class tabCommands(Cmd):
     with open('test', 'wb') as f:
       f.write(file_data)
 
+    self.do_write_file('test 0x0000F000')
+
+    os.system('rm test')
+
   def complete_cnn_write_model(self, text, line, start_index, end_index):
     opts = line.split(' ')[1:]
     if text and len(opts) == 1: # if I already started typing the option, filter the existing options
