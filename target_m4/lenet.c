@@ -9,18 +9,18 @@
 #include <libopencm3/stm32/quadspi.h>
 #include "IS25LP128F.h"
 
-#include "../target_x86/model_data.h"
+//#include "../target_x86/model_data.h"
 
 
-struct quadspi_command read = {
-    .instruction.mode = QUADSPI_CCR_MODE_4LINE,
-    .instruction.instruction = IS25LP128F_CMD_FAST_READ,
-    .address.mode = QUADSPI_CCR_MODE_4LINE,
-    .address.size = QUADSPI_CCR_SIZE_32BIT,
-    .alternative_bytes.mode = QUADSPI_CCR_MODE_NONE,
-    .dummy_cycles = 6,
-    .data_mode = QUADSPI_CCR_MODE_4LINE
-};
+//struct quadspi_command readCNN = {
+//    .instruction.mode = QUADSPI_CCR_MODE_4LINE,
+//    .instruction.instruction = IS25LP128F_CMD_FAST_READ,
+//    .address.mode = QUADSPI_CCR_MODE_4LINE,
+//    .address.size = QUADSPI_CCR_SIZE_32BIT,
+//    .alternative_bytes.mode = QUADSPI_CCR_MODE_NONE,
+//    .dummy_cycles = 6,
+//    .data_mode = QUADSPI_CCR_MODE_4LINE
+//};
 
 struct quadspi_command enableQPI = {
     .instruction.mode = QUADSPI_CCR_MODE_1LINE,
@@ -76,7 +76,7 @@ int main(void) {
     quadspi_disable();
     quadspi_set_flash_size(23); // 128 Mbit = 16 Mbyte = 2^(n+1) // n = 23
     quadspi_set_cs_high_time(6);   // 1/2 clock cycle
-    quadspi_set_prescaler(2);   // 1:80 prescaler
+    quadspi_set_prescaler(1);   // 1:80 prescaler
     quadspi_clear_flag(QUADSPI_FCR_CTOF | QUADSPI_FCR_CSMF | QUADSPI_FCR_CTCF | QUADSPI_FCR_CTEF);
     quadspi_select_flash(QUADSPI_FLASH_SEL_2);
     quadspi_set_threshold_level(7); // Set FIFO threshold level to 8 bytes
@@ -88,40 +88,69 @@ int main(void) {
     quadspi_wait_while_busy();
     quadspi_write(&enableQPI, NULL, 0);
 
+    //readCNN.address.address = 0x0000F004;
+    //quadspi_wait_while_busy();
+    //quadspi_read(&readCNN, lenet_model_tflite, lenet_model_tflite_len);
+
+    quadspi_wait_while_busy();
+    uint32_t ccr = 0;
+    ccr = quadspi_prepare_funcion_mode(ccr, QUADSPI_CCR_FMODE_MEMMAP);
+    ccr = quadspi_prepare_address_mode(ccr, QUADSPI_CCR_MODE_4LINE);
+    ccr = quadspi_prepare_address_size(ccr, QUADSPI_CCR_SIZE_32BIT);
+    ccr = quadspi_prepare_data_mode(ccr, QUADSPI_CCR_MODE_4LINE);
+    ccr = quadspi_prepare_dummy_cycles(ccr, 6);
+    ccr = quadspi_prepare_instruction_mode(ccr, QUADSPI_CCR_MODE_4LINE);
+    ccr = quadspi_prepare_instruction(ccr, IS25LP128F_CMD_FAST_READ);
+    ccr = quadspi_prepare_alternative_bytes_mode(ccr, QUADSPI_CCR_MODE_NONE);
+    quadspi_write_ccr(ccr);
+
     run_lenet5_cnn();
     return 0;
 }
 
 int run_lenet5_cnn(void) {
     char string[9];
+    unsigned char* lenet5_model_tflite = (unsigned char*)0x9000F004;
+    unsigned int lenet5_model_tflite_len = *(unsigned int*)0x9000F000;
 
-    read.address.address = 0x0000F004;
-    quadspi_wait_while_busy();
+    sprintf(string, "%d", lenet5_model_tflite_len);
+    for(int i = 0; i < 6; i++)
+    {
+        usart_send_blocking(USART1, string[i]);
+    }
+    usart_send_blocking(USART1, '\r');
+    usart_send_blocking(USART1, '\n');
+    return 1;
+    //read.address.address = 0x0000F004;
+    //quadspi_wait_while_busy();
     //quadspi_read(&read, lenet_model_tflite, lenet_model_tflite_len);
 
+
+    usart_send_blocking(USART1, 'S');
     // Initialize the TensorFlow Lite Micro interpreter.
-    tflm_init(lenet_model_tflite);
+    //tflm_init(lenet_model_tflite);
+    usart_send_blocking(USART1, 'S');
 
     usart_send_blocking(USART1, '\r');
     usart_send_blocking(USART1, '\n');
 
-    read.address.address = 0x00000004;
+    //read.address.address = 0x90000004;
     float* input = tflm_get_input_buffer(0);
     //float input[32*32];
-    uint8_t input_data[32*32];
+    uint8_t* input_data = (uint8_t*)0x90000004;
 
-    if(input == NULL)
-    {
-        usart_send_blocking(USART1, 'E');
-        usart_send_blocking(USART1, 'R');
-        usart_send_blocking(USART1, 'R');
-        usart_send_blocking(USART1, '\r');
-        usart_send_blocking(USART1, '\n');
-        return 1;
-    }
+    //if(input == NULL)
+    //{
+    //    usart_send_blocking(USART1, 'E');
+    //    usart_send_blocking(USART1, 'R');
+    //    usart_send_blocking(USART1, 'R');
+    //    usart_send_blocking(USART1, '\r');
+    //    usart_send_blocking(USART1, '\n');
+    //    return 1;
+    //}
 
-    quadspi_wait_while_busy();
-    quadspi_read(&read, input_data, 32*32);
+    //quadspi_wait_while_busy();
+    //quadspi_read(&read, input_data, 32*32);
 
     for (int i = 0; i < 32*32; i++) {
         input[i] = input_data[i];
